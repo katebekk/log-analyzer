@@ -1,31 +1,25 @@
 <?php
 
 
-
 class LogAnalyzer
 {
-   /* var $handle;
-    var $num;
-    var $time;
-    function __construct($file, $num, $time)
-    {
-        $this->handle = $file;
-        $this->num = $num;
-        $this->time = $time;
-    }*/
-    public function check_log($file,$num, $time)
+
+    public function check_log($file, $num, $time)
     {
         $count = 0;
         $count_false = 0;
         $arr[] = array();
         $time_start = null;
         $time_end = null;
+        $start = memory_get_usage();
 
         while (!feof($file)) {
             $count++;
             $buffer = fgetcsv($file, 1000, " ");
             //проверка на пустую строку
-            if (empty($buffer[0])) $buffer = fgetcsv($file, 1000, " ");
+            while (($buffer[11] == null)  and !feof($file)){
+                $buffer = fgetcsv($file, 1000, " ");
+            }
 
             if ((preg_match('/^(5(\d\d))$/', $buffer[6])) or ($buffer[8] > $time)) $count_false++;
 
@@ -33,6 +27,7 @@ class LogAnalyzer
             if ($lvl >= $num and $count > 1) {
                 $time_start = substr($buffer[3], 12, 21);
                 $time_end = substr($buffer[3], 12, 21);
+
                 while (($lvl >= $num) and (!preg_match('/^(5(\d\d))$/', $buffer[6]) or ($buffer[8] < $time)) and (!feof($file))) {
                     $buffer = fgetcsv($file, 1000, " ");
                     if (empty($buffer[0])) $buffer = fgetcsv($file, 1000, " ");
@@ -44,9 +39,21 @@ class LogAnalyzer
                 array_push($arr, array($time_start, $time_end, round($lvl, 1)));
 
             }
+            $end = memory_get_usage();
+            if(($end - $start) > 20000){
+                $arr = $this->sort_arr($arr);
+                echo $end - $start,"\n";
+                $this->print_answer($arr);
+                unset($arr);
+                $arr[] = array();
+                $end = memory_get_usage();
+                echo $end - $start,"\n";
+            }
+
         }
-        $new_arr = $this->sort_arr($arr);
-        $this->print_answer($new_arr);
+        $arr = $this->sort_arr($arr);
+        $this->print_answer($arr);
+        unset($arr);
 
     }
 
@@ -72,13 +79,14 @@ class LogAnalyzer
         return $arr;
     }
 
-//check_log($handle, $num1, $time1);
 
 
 }
 
 $shortopts .= "u:";
 $shortopts .= "t:";
+
+
 
 $handle = fopen('php://stdin', 'r');
 
@@ -87,31 +95,9 @@ $num1 = $options["u"];
 $time1 = $options["t"];
 
 $analyzer = new LogAnalyzer();
-$analyzer->check_log($handle,$num1,$time1);
+$analyzer->check_log($handle, $num1, $time1);
 
 
-
-
-//check_log($handle, $num1, $time1);
-
-$chunk_size = (1<<24);
-$position = 0;
-//while (!feof($handle)) {
-//
-//    $position1 = ftell($handle);
-//    $chunk = fread($handle, $chunk_size );
-//
-//    $last_lf_pos = strrpos($chunk, PHP_EOL);
-//    $pos = strpos($chunk, $findme);
-//    while($pos)
-//    $pos = strpos($, $findme);
-//   //echo $position1," ",$position2," ",$last_lf_pos,"\n";
-//    $buffer = mb_substr($chunk,0,$last_lf_pos);
-//
-//    echo "hello \n",$buffer,"\n";
-//    $buffer = NULL;
-//
-//}
 
 
 fclose($handle);
