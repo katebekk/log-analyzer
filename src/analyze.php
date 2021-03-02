@@ -17,7 +17,7 @@ class LogAnalyzer
             $count++;
             $buffer = fgetcsv($file, 1000, " ");
             //проверка на пустую строку
-            while (($buffer[11] == null)  and !feof($file)){
+            while (($buffer[11] == null) and !feof($file)) {
                 $buffer = fgetcsv($file, 1000, " ");
             }
 
@@ -40,14 +40,14 @@ class LogAnalyzer
 
             }
             $end = memory_get_usage();
-            if(($end - $start) > 20000){
+            if (($end - $start) > 20000) {
                 $arr = $this->sort_arr($arr);
-                echo $end - $start,"\n";
+                echo $end - $start, "\n";
                 $this->print_answer($arr);
                 unset($arr);
                 $arr[] = array();
                 $end = memory_get_usage();
-                echo $end - $start,"\n";
+                echo $end - $start, "\n";
             }
 
         }
@@ -79,6 +79,15 @@ class LogAnalyzer
         return $arr;
     }
 
+    public function __invoke($filename, $num, $time)
+    {
+        $handle = fopen($filename, 'r');
+        if(!$handle) {
+            throw new Exception("Cannot open file handle.");
+        }
+        $this->check_log($handle, $num, $time);
+        fclose($handle);
+    }
 
 
 }
@@ -86,19 +95,13 @@ class LogAnalyzer
 $shortopts .= "u:";
 $shortopts .= "t:";
 
-
-
-$handle = fopen('php://stdin', 'r');
-
+$filename = 'php://stdin';
 $options = getopt($shortopts);
 $num1 = $options["u"];
 $time1 = $options["t"];
 
 $analyzer = new LogAnalyzer();
-$analyzer->check_log($handle, $num1, $time1);
+$analyzer($filename, $num1,$time1);
 
 
-
-
-fclose($handle);
 
