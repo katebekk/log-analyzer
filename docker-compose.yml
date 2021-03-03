@@ -5,6 +5,15 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    entrypoint: /bin/sh
+    entrypoint: /bin/bash
     volumes:
       - ./:/app
+
+#services:
+#  php:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    entrypoint: /bin/bash
+#    volumes:
+#      - ./:/app
