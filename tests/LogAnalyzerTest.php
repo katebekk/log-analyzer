@@ -7,10 +7,6 @@ use App\LogAnalyzer;
 use PHPUnit\Framework\TestCase;
 class LogAnalyzerTest extends TestCase
 {
-    //пустой файл
-    //файл не передался
-    //проверка на
-    //аргументы
 
     //сортировка
     public function testSort()
@@ -63,15 +59,6 @@ class LogAnalyzerTest extends TestCase
 
         $this->assertEquals($arr, $sorted_arr);
     }
-    /*public function testEmptyFile()
-    {
-        $filename = 'Util/access.log';
-        $analyzer = new LogAnalyzer();
-        $analyzer($filename, 44,44);
-//        try{
-//            $analyzer($filename, 44,44);
-//        }catch (Exception $e) {
-//            echo $e->getMessage();
-//        }
-    }*/
+
+
 }

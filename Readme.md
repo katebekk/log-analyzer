@@ -35,7 +35,7 @@
     - docker-compose run --rm php
     - docker-compose exec php bash
 
-2. cat access.log | php analyze.php -u 99.9 -t 45
+2. cat access.log | php analyze.php -u 80.9 -t 45
 3. #### тесты:
     * composer install
     * cd ..
